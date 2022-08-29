@@ -1,7 +1,15 @@
-import { Button, Card, Container, Grid, Text } from "@nextui-org/react";
+import {
+  Button,
+  Card,
+  Container,
+  Grid,
+  Row,
+  Spacer,
+  Text,
+} from "@nextui-org/react";
 import { GetStaticProps, NextPage, GetStaticPaths } from "next";
 import Image from "next/image";
-import { pokeApi } from "../../api";
+import { pokeApi, FavoritePokemosApi } from "../../api";
 import { Layout } from "../../components/layouts";
 import { Pokemon } from "../../interfaces";
 
@@ -10,10 +18,20 @@ interface Props {
 }
 
 const PokemonPage: NextPage<Props> = ({ pokemon }) => {
-  console.log(pokemon);
+  const handleAddToFavorites = () => {
+    const favoritePokemons = new FavoritePokemosApi();
+
+    favoritePokemons.addFavorite({
+      id: pokemon.id,
+      name: pokemon.name,
+      img: pokemon.sprites.other?.dream_world?.front_default || "no-image.png",
+      url: "",
+    });
+    console.log(favoritePokemons.getFavorites());
+  };
 
   return (
-    <Layout title={pokemon.name}>
+    <Layout title={`Pokémon - ${pokemon.name}`}>
       <Grid.Container
         css={{
           marginTop: "5px",
@@ -35,19 +53,19 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
         </Grid>
         <Grid xs={12} sm={8}>
           <Card>
-            <Card.Header
-              css={{ display: "flex", justifyContent: "space-between" }}
-            >
-              <Text transform="capitalize" h1>
-                {pokemon.name}
-              </Text>
-              <Button color={"gradient"} ghost>
-                Guardar en favoritos
-              </Button>
+            <Card.Header>
+              <Row wrap="wrap" justify="space-between" align="center" fluid>
+                <Text transform="capitalize" h2>
+                  {pokemon.name}
+                </Text>
+                <Button color={"gradient"} ghost onPress={handleAddToFavorites}>
+                  Add to favorites
+                </Button>
+              </Row>
             </Card.Header>
             <Card.Body>
-              <Text size={30}>Sprites:</Text>
-              <Container justify="space-between">
+              <Text size={27}>Sprites:</Text>
+              <Container fluid>
                 <Image
                   src={pokemon.sprites.front_default}
                   alt={pokemon.name}
@@ -76,6 +94,33 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
             </Card.Body>
           </Card>
         </Grid>
+      </Grid.Container>
+
+      <Grid.Container gap={2}>
+        <Card>
+          <Card.Body>
+            <Text h3>Abilities:</Text>
+            <Container display="flex" fluid>
+              {pokemon.abilities.map((ability) => (
+                <Text
+                  h6
+                  transform="capitalize"
+                  css={{ marginRight: "1rem" }}
+                  key={ability.ability.name}
+                >
+                  {ability.ability.name}
+                </Text>
+              ))}
+            </Container>
+            <Container display="flex" alignItems="center">
+              <Text color="secondary" h5>
+                Base experience:
+              </Text>
+              <Spacer x={0.5} />
+              <Text h5>{pokemon.base_experience}</Text>
+            </Container>
+          </Card.Body>
+        </Card>
       </Grid.Container>
     </Layout>
   );

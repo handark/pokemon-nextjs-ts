@@ -1,6 +1,7 @@
 import { FC, ReactNode } from "react";
 import Head from "next/head";
-import { Navbar } from "../ui";
+import { NavbarDefault } from "../ui";
+import { Container } from "@nextui-org/react";
 
 interface Props {
   title?: string;
@@ -21,15 +22,15 @@ export const Layout: FC<Props> = ({ children, title }) => {
       </Head>
 
       {/* Navbar */}
-      <Navbar />
+      <NavbarDefault />
 
-      <main
+      <Container
         style={{
           padding: "0 20px",
         }}
       >
         {children}
-      </main>
+      </Container>
     </>
   );
 };
