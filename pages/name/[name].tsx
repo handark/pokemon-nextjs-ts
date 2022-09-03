@@ -1,33 +1,46 @@
+import { useState } from "react";
+
 import {
   Button,
   Card,
   Container,
   Grid,
+  Image,
   Row,
   Spacer,
   Text,
 } from "@nextui-org/react";
 import { GetStaticProps, NextPage, GetStaticPaths } from "next";
-import Image from "next/image";
-import { pokeApi, FavoritePokemosApi } from "../../api";
+
+import confetti from "canvas-confetti";
+
+import { pokeApi } from "../../api";
 import { Layout } from "../../components/layouts";
-import { Pokemon } from "../../interfaces";
+import { Pokemon, PokemonListResponse } from "../../interfaces";
+import { getPokemonInfo, localFavorites } from "../../utils";
 
 interface Props {
   pokemon: Pokemon;
 }
 
-const PokemonPage: NextPage<Props> = ({ pokemon }) => {
-  const handleAddToFavorites = () => {
-    const favoritePokemons = new FavoritePokemosApi();
+const PokemonByNamePage: NextPage<Props> = ({ pokemon }) => {
+  const [isInFavorite, setIsInFavorite] = useState(
+    localFavorites.existInFavorites(pokemon)
+  );
 
-    favoritePokemons.addFavorite({
-      id: pokemon.id,
-      name: pokemon.name,
-      img: pokemon.sprites.other?.dream_world?.front_default || "no-image.png",
-      url: "",
+  const onToggleFavorite = () => {
+    localFavorites.toogleFavorite(pokemon);
+    setIsInFavorite(!isInFavorite);
+
+    if (isInFavorite) return;
+
+    confetti({
+      zIndex: 999,
+      particleCount: 100,
+      spread: 160,
+      angle: -100,
+      origin: { y: 0, x: 1 },
     });
-    console.log(favoritePokemons.getFavorites());
   };
 
   return (
@@ -58,37 +71,43 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
                 <Text transform="capitalize" h2>
                   {pokemon.name}
                 </Text>
-                <Button color={"gradient"} ghost onPress={handleAddToFavorites}>
-                  Add to favorites
+                <Button
+                  color={"gradient"}
+                  ghost={!isInFavorite}
+                  onPress={onToggleFavorite}
+                >
+                  {isInFavorite
+                    ? "Eliminar de favoritos"
+                    : "Agregar a favoritos"}
                 </Button>
               </Row>
             </Card.Header>
             <Card.Body>
               <Text size={27}>Sprites:</Text>
-              <Container fluid>
+              <Container display="flex">
                 <Image
                   src={pokemon.sprites.front_default}
                   alt={pokemon.name}
-                  width={100}
-                  height={100}
+                  width={110}
+                  height={110}
                 />
                 <Image
                   src={pokemon.sprites.back_default}
                   alt={pokemon.name}
-                  width={100}
-                  height={100}
+                  width={110}
+                  height={110}
                 />
                 <Image
                   src={pokemon.sprites.front_shiny}
                   alt={pokemon.name}
-                  width={100}
-                  height={100}
+                  width={110}
+                  height={110}
                 />
                 <Image
                   src={pokemon.sprites.back_shiny}
                   alt={pokemon.name}
-                  width={100}
-                  height={100}
+                  width={110}
+                  height={110}
                 />
               </Container>
             </Card.Body>
@@ -99,7 +118,7 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
       <Grid.Container gap={2}>
         <Card>
           <Card.Body>
-            <Text h3>Abilities:</Text>
+            <Text h3>Abilidades:</Text>
             <Container display="flex" fluid>
               {pokemon.abilities.map((ability) => (
                 <Text
@@ -114,7 +133,7 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
             </Container>
             <Container display="flex" alignItems="center">
               <Text color="secondary" h5>
-                Base experience:
+                Experiencia:
               </Text>
               <Spacer x={0.5} />
               <Text h5>{pokemon.base_experience}</Text>
@@ -127,23 +146,24 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
-  const pokemons151 = [...Array(151)].map((value, index) => `${index + 1}`);
+  const { data } = await pokeApi.get<PokemonListResponse>(`/pokemon?limit=151`);
+
+  const pokemonNames: string[] = data.results.map((pokemon) => pokemon.name);
 
   return {
-    paths: pokemons151.map((id) => ({ params: { id } })),
+    paths: pokemonNames.map((name) => ({ params: { name } })),
     fallback: false,
   };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { id } = params as { id: string };
-  const { data } = await pokeApi.get<Pokemon>(`/pokemon/${id}`);
+  const { name } = params as { name: string };
 
   return {
     props: {
-      pokemon: data,
+      pokemon: await getPokemonInfo(name),
     },
   };
 };
 
-export default PokemonPage;
+export default PokemonByNamePage;

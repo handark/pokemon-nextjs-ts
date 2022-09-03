@@ -1,28 +1,19 @@
-import {
-  Text,
-  useTheme,
-  Navbar,
-  Link,
-  Switch,
-  Button,
-} from "@nextui-org/react";
-import Image from "next/image";
-import NextLink from "next/link";
+import { Text, useTheme, Navbar, Button, Link } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { Menu } from "../../interfaces";
-import { useTheme as useNextTheme } from "next-themes";
-import { GithubIcon, MoonIcon, SunIcon } from "./IconsDefault";
+import { Bulbasaur, CharmeleonSvg } from "../pokemon";
+import { GithubIcon } from "./IconsDefault";
+import NextLink from "next/link";
 
 export const NavbarDefault = () => {
-  const { setTheme } = useNextTheme();
-  const { isDark, type } = useTheme();
+  const { theme } = useTheme();
 
   const route = useRouter();
 
   const menuItems: Menu[] = [
     {
       href: "/favorites",
-      title: "Favorites",
+      title: "Favoritos",
     },
   ];
 
@@ -31,41 +22,32 @@ export const NavbarDefault = () => {
   };
 
   return (
-    <Navbar isBordered={isDark} variant={"floating"}>
+    <Navbar isBordered variant={"floating"}>
       <Navbar.Brand>
-        <NextLink href="/" passHref>
+        <NextLink href="/">
           <Link>
-            <Image
-              alt="icono de la app"
-              width={50}
-              height={50}
-              src={
-                "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/5.svg"
-              }
-            />
-            <Text css={{ marginLeft: 10 }} h2>
+            <Bulbasaur />
+            <Text
+              color="white"
+              h2
+              css={{
+                marginLeft: "0.7rem",
+              }}
+            >
               P
             </Text>
-            <Text h3>okedex</Text>
+            <Text color="white" h3>
+              okémon
+            </Text>
           </Link>
         </NextLink>
       </Navbar.Brand>
-      <Navbar.Content>
+
+      <Navbar.Content hideIn="xs">
         {menuItems.map((item) => (
           <NextLink key={item.href} href={item.href}>
             <Link>
-              <Text
-                size={20}
-                color={
-                  route.pathname === item.href
-                    ? "primary"
-                    : isDark
-                    ? "#ECEDEE"
-                    : "#111213"
-                }
-              >
-                {item.title}
-              </Text>
+              <Text size={20}>{item.title}</Text>
             </Link>
           </NextLink>
         ))}
@@ -76,36 +58,7 @@ export const NavbarDefault = () => {
           light
           icon={<GithubIcon fill="currentColor" filled />}
         />
-        {/*         <Switch
-          checked={isDark}
-          onChange={(e) => setTheme(e.target.checked ? "dark" : "light")}
-          iconOn={<MoonIcon />}
-          iconOff={<SunIcon />}
-        /> */}
-        <Button
-          onPress={() => setTheme(isDark ? "light" : "dark")}
-          auto
-          light
-          icon={
-            isDark ? (
-              <MoonIcon fill="currentColor" filled />
-            ) : (
-              <SunIcon fill="currentColor" filled />
-            )
-          }
-        />
       </Navbar.Content>
     </Navbar>
-    /*   <div
-   
-       Para ocupar el espacio del navbar, se debe agregar un Spacer con flex 1.
-      <Spacer css={{ flex: 1 }} />
-
-      <NextLink href="/favorites" passHref>
-        <Link>
-          <Text>Favoritos</Text>
-        </Link>
-      </NextLink>
-    </div> */
   );
 };
