@@ -43,7 +43,7 @@ export const NavbarDefault = () => {
         </NextLink>
       </Navbar.Brand>
 
-      <Navbar.Content hideIn="xs">
+      <Navbar.Content>
         {menuItems.map((item) => (
           <NextLink key={item.href} href={item.href}>
             <Link>

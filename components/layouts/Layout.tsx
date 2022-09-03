@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react";
 import Head from "next/head";
 import { NavbarDefault } from "../ui";
-import { Container } from "@nextui-org/react";
+import { Container, Grid, Link, Text } from "@nextui-org/react";
 import { useRouter } from "next/router";
 
 interface Props {
@@ -29,6 +29,7 @@ export const Layout: FC<Props> = ({ children, title }) => {
           content={`Información sobre ${title}`}
         />
         <meta property="og:image" content={`${origin}/img/banner.png`} />
+        <link rel="icon" href="/bulbasaur.svg" />
       </Head>
 
       {/* Navbar */}
@@ -41,6 +42,20 @@ export const Layout: FC<Props> = ({ children, title }) => {
       >
         {children}
       </Container>
+
+      <footer>
+        <Container>
+          <Grid.Container gap={2} justify="center">
+            <Grid>
+              <Text>© {new Date().getFullYear()}</Text>
+            </Grid>
+            <Grid css={{ display: "flex", gap: "7px" }}>
+              <Text>Creado por</Text>
+              <Link href="https://joseorozco.co">Jose Luis Orozco</Link>
+            </Grid>
+          </Grid.Container>
+        </Container>
+      </footer>
     </>
   );
 };
