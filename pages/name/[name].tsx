@@ -5,7 +5,6 @@ import {
   Card,
   Container,
   Grid,
-  Image,
   Row,
   Spacer,
   Text,
@@ -18,6 +17,7 @@ import { pokeApi } from "../../api";
 import { Layout } from "../../components/layouts";
 import { Pokemon, PokemonListResponse } from "../../interfaces";
 import { getPokemonInfo, localFavorites } from "../../utils";
+import Image from "next/image";
 
 interface Props {
   pokemon: Pokemon;
@@ -84,31 +84,46 @@ const PokemonByNamePage: NextPage<Props> = ({ pokemon }) => {
             </Card.Header>
             <Card.Body>
               <Text size={27}>Sprites:</Text>
-              <Container display="flex">
-                <Image
-                  src={pokemon.sprites.front_default}
-                  alt={pokemon.name}
-                  width={110}
-                  height={110}
-                />
-                <Image
-                  src={pokemon.sprites.back_default}
-                  alt={pokemon.name}
-                  width={110}
-                  height={110}
-                />
-                <Image
-                  src={pokemon.sprites.front_shiny}
-                  alt={pokemon.name}
-                  width={110}
-                  height={110}
-                />
-                <Image
-                  src={pokemon.sprites.back_shiny}
-                  alt={pokemon.name}
-                  width={110}
-                  height={110}
-                />
+              <Container>
+                <Grid.Container gap={1} justify="space-between">
+                  <Grid xs={12} sm={6} md={3} xl={3} justify="center">
+                    <Image
+                      src={pokemon.sprites.front_default}
+                      alt={pokemon.name}
+                      width={130}
+                      height={120}
+                      layout="fixed"
+                    />
+                  </Grid>
+                  <Grid xs={12} sm={6} md={3} xl={3} justify="center">
+                    <Image
+                      src={pokemon.sprites.back_default}
+                      alt={pokemon.name}
+                      width={130}
+                      height={120}
+                      layout="fixed"
+                    />
+                  </Grid>
+
+                  <Grid xs={12} sm={6} md={3} xl={3} justify="center">
+                    <Image
+                      src={pokemon.sprites.front_shiny}
+                      alt={pokemon.name}
+                      width={130}
+                      height={120}
+                      layout="fixed"
+                    />
+                  </Grid>
+                  <Grid xs={12} sm={6} md={3} xl={3} justify="center">
+                    <Image
+                      src={pokemon.sprites.back_shiny}
+                      alt={pokemon.name}
+                      width={130}
+                      height={120}
+                      layout="fixed"
+                    />
+                  </Grid>
+                </Grid.Container>
               </Container>
             </Card.Body>
           </Card>

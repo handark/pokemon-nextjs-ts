@@ -26,7 +26,7 @@ const HomePage: NextPage<Props> = ({ pokemons }) => {
     }
 
     const filteredPokemons = pokemons.filter((pokemon) =>
-      pokemon.name.includes(search)
+      pokemon.name.toLowerCase().includes(search.toLowerCase())
     );
     setFilteredPokemons(filteredPokemons);
   }, [search]);

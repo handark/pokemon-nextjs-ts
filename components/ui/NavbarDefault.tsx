@@ -1,12 +1,21 @@
-import { Text, useTheme, Navbar, Button, Link } from "@nextui-org/react";
+import {
+  Text,
+  useTheme,
+  Navbar,
+  Button,
+  Link,
+  Switch,
+} from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { Menu } from "../../interfaces";
 import { Bulbasaur, CharmeleonSvg } from "../pokemon";
 import { GithubIcon } from "./IconsDefault";
 import NextLink from "next/link";
+import { useTheme as useNextTheme } from "next-themes";
 
 export const NavbarDefault = () => {
-  const { theme } = useTheme();
+  const { setTheme } = useNextTheme();
+  const { isDark, type } = useTheme();
 
   const route = useRouter();
 
