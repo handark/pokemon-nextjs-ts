@@ -1,33 +1,50 @@
 import {
   Text,
-  useTheme,
   Navbar,
   Button,
   Link,
-  Switch,
+  Grid,
+  Avatar,
+  Dropdown,
 } from "@nextui-org/react";
-import { useRouter } from "next/router";
+
 import { Menu } from "../../interfaces";
-import { Bulbasaur, CharmeleonSvg } from "../pokemon";
-import { GithubIcon } from "./IconsDefault";
+import { Bulbasaur } from "../pokemon";
+
 import NextLink from "next/link";
-import { useTheme as useNextTheme } from "next-themes";
+import { onAuthStateChanged, User, signOut } from "firebase/auth";
+import { auth } from "../../api/firebase";
+import { useState } from "react";
 
 export const NavbarDefault = () => {
-  const { setTheme } = useNextTheme();
-  const { isDark, type } = useTheme();
-
-  const route = useRouter();
-
   const menuItems: Menu[] = [
     {
-      href: "/favorites",
+      href: "/favoritos",
       title: "Favoritos",
     },
   ];
 
-  const handleIrARepositorio = () => {
-    window.open("https://github.com/handark/pokemon-nextjs-ts");
+  const [user, setUser] = useState<User | null>(null);
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // https://firebase.google.com/docs/reference/js/firebase.User
+      setUser(user);
+      console.log("Usuario logueado", user);
+    } else {
+      console.log("No hay usuario");
+      setUser(null);
+    }
+  });
+
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        console.log("Usuario deslogueado");
+      })
+      .catch((error) => {
+        console.log("Error al desloguear", error);
+      });
   };
 
   return (
@@ -37,7 +54,6 @@ export const NavbarDefault = () => {
           <Link>
             <Bulbasaur />
             <Text
-              color="white"
               h2
               css={{
                 marginLeft: "0.7rem",
@@ -45,9 +61,7 @@ export const NavbarDefault = () => {
             >
               P
             </Text>
-            <Text color="white" h3>
-              okémon
-            </Text>
+            <Text h3>okémon</Text>
           </Link>
         </NextLink>
       </Navbar.Brand>
@@ -61,12 +75,50 @@ export const NavbarDefault = () => {
           </NextLink>
         ))}
 
-        <Button
-          onPress={handleIrARepositorio}
-          auto
-          light
-          icon={<GithubIcon fill="currentColor" filled />}
-        />
+        {user ? (
+          <Dropdown placement="bottom-right">
+            <Navbar.Item>
+              <Dropdown.Trigger>
+                <Avatar
+                  bordered
+                  as="button"
+                  color="secondary"
+                  size="md"
+                  src={user.photoURL || ""}
+                />
+              </Dropdown.Trigger>
+            </Navbar.Item>
+            <Dropdown.Menu
+              aria-label="User menu actions"
+              color="secondary"
+              onAction={(actionKey) => {
+                if (actionKey === "logout") handleLogout();
+              }}
+            >
+              <Dropdown.Item key="profile" css={{ height: "$18" }}>
+                <Text b color="inherit" css={{ d: "flex" }}>
+                  {user?.displayName}
+                </Text>
+                <Text b color="inherit" css={{ d: "flex" }}>
+                  {user?.email}
+                </Text>
+              </Dropdown.Item>
+              <Dropdown.Item key="settings" withDivider>
+                Mi Cuenta
+              </Dropdown.Item>
+
+              <Dropdown.Item key="logout" withDivider color="error">
+                Salir
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        ) : (
+          <Navbar.Item>
+            <Button auto flat as={Link} href="/usuario/login">
+              Acceder
+            </Button>
+          </Navbar.Item>
+        )}
       </Navbar.Content>
     </Navbar>
   );
